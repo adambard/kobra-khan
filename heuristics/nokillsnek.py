@@ -36,11 +36,11 @@ board_state:
 
 def move(pos, d):
     if d == "u":
-        return {"x": pos["x"], "y": pos["x"] - 1}
+        return {"x": pos["x"], "y": pos["y"] - 1}
     elif d == "r":
         return {"x": pos["x"] + 1, "y": pos["y"]}
     elif d == "d":
-        return {"x": pos["x"], "y": pos["x"] + 1}
+        return {"x": pos["x"], "y": pos["y"] + 1}
     elif d == "l":
         return {"x": pos["x"] - 1, "y": pos["y"]}
     else:
@@ -71,6 +71,7 @@ def is_safe(board_state, pos):
         if pos in snake["body"][:-1]:
             return False
 
+    print("Ye")
     return True
 
 
