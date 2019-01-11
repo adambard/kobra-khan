@@ -58,7 +58,7 @@ def surroundings(pos):
     ]
 
 
-def is_safe(board_state: BoardState, pos):
+def is_safe(board_state: BoardState, pos, depth=0):
     x, y = pos
 
     print("safe?", pos)
@@ -76,8 +76,12 @@ def is_safe(board_state: BoardState, pos):
         if pos in snake.body[:-1]:
             return False
 
-    print("Ye")
-    return True
+    if depth >= 1:
+        print("Ye")
+        return True
+
+    else:
+        return any(is_safe(board_state, pos, 1) for pos in surroundings(pos))
 
 
 def apply(board_state):
