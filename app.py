@@ -6,7 +6,7 @@ import logging
 
 from pprint import pprint
 
-
+from data import BoardState
 from heuristics import nokillsnek
 
 
@@ -43,9 +43,11 @@ async def start(request):
 
 @app.route('/move', methods=['POST'])
 async def move(request):
-    pprint(await request.json())
+    board_state_raw = await request.json()
+    pprint(board_state_raw)
 
-    weights = get_weights(await request.json())
+    board_state = BoardState(board_state_raw)
+    weights = get_weights(board_state)
 
     logger.debug(weights)
 
