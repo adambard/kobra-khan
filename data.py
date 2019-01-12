@@ -1,3 +1,5 @@
+from pandas import *
+
 def point_to_tuple(p):
     return (p["x"], p["y"])
 
@@ -27,6 +29,9 @@ class BoardState(object):
 
     def __init__(self, raw_board_state):
         self.raw = raw_board_state
+        self.precalc = [['safe' for i in range(3)] for j in range(2)]
+        # print(DataFrame(self.precalc))
+        print('************')
 
     @property
     def you(self):
@@ -48,3 +53,11 @@ class BoardState(object):
     def snakes(self):
         return [Snake(p) for p in self.raw["board"]["snakes"]]
 
+    @property
+    def state(self):
+        for snake in self.raw["board"]["snakes"]:
+            for body in snake['body']:
+                x = body['x']
+                y = body['y']
+                self.precalc[y][x] = 'unsafe'
+        return self.precalc

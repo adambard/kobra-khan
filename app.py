@@ -5,18 +5,17 @@ import uvicorn
 import logging
 
 from pprint import pprint
+from pandas import *
 
 from data import BoardState
 from heuristics import nokillsnek
 
 
 logger = logging.getLogger(__name__)
-
 logger.setLevel(logging.DEBUG)
 
 
 app = Starlette()
-
 
 def get_weights(board_state):
     # TODO more smartness
@@ -44,9 +43,11 @@ async def start(request):
 @app.route('/move', methods=['POST'])
 async def move(request):
     board_state_raw = await request.json()
-    pprint(board_state_raw)
+    # pprint(board_state_raw)
 
     board_state = BoardState(board_state_raw)
+    print(DataFrame(board_state.state))
+
     weights = get_weights(board_state)
 
     logger.debug(weights)
