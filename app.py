@@ -6,7 +6,6 @@ from starlette.responses import JSONResponse
 import uvicorn
 
 from libsnek.data import BoardState
-from libsnek.util import timeit
 
 from heuristics import genetic
 
@@ -39,11 +38,17 @@ async def start(request):
 
 @app.route('/move', methods=['POST'])
 async def move(request):
+
+    start = time.time()
     board_state_raw = await request.json()
 
     board_state = BoardState(board_state_raw)
-    weights = timeit(lambda: genetic.apply(board_state))
 
+    logger.info("=== Game: %s, Turn: %d, Snake: %s ===", board_state.id, board_state.turn, board_state.you.id)
+
+    end = time.time()
+    weights = await genetic.apply(board_state)
+    logger.info("Elapsed time: %0.2fs", end - start)
     logger.debug(weights)
 
     return JSONResponse({'move': get_move(weights)})

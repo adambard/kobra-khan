@@ -17,7 +17,7 @@ def rating(board_state, pos):
     return 0.0
 
 
-def apply(board_state) -> List[float]:
+async def apply(board_state) -> List[float]:
     my_pos = board_state.you.body[0]
 
     return [

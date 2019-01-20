@@ -108,9 +108,11 @@ def is_safe(board_state: BoardState, pos, depth=1, max_depth=2,
 
 
 @functools.lru_cache(maxsize=128, typed=False)
-def flood_fill(board_state, start_pos):
+def flood_fill(board_state, start_pos, threshold=None):
     """
     Returns a set of points constituting a flood fill from (start_pos)
+
+    If threshold is provided, stop after we've visited that many points.
     """
     if not is_safe(board_state, start_pos, max_depth=1):
         return set()
@@ -125,6 +127,9 @@ def flood_fill(board_state, start_pos):
         for p in surroundings(node):
             if p not in visited and is_safe(board_state, p):
                 frontier.put(p)
+
+        if threshold and len(visited) >= threshold:
+            return visited
 
     return visited
 

@@ -10,10 +10,13 @@ def fill_size(board_state, start_pos):
     if not is_safe(board_state, start_pos, max_depth=1):
         return 0
 
-    return len(flood_fill(board_state, start_pos))
+    # 10% of the board area is plenty
+    threshold = board_state.width * board_state.height / 10
+
+    return len(flood_fill(board_state, start_pos, threshold=threshold))
 
 
-def apply(board_state):
+async def apply(board_state):
     my_pos = board_state.you.body[0]
 
     fill_sizes = [fill_size(board_state, p) for p in surroundings(my_pos)]
