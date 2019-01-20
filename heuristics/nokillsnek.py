@@ -1,93 +1,12 @@
-"""
-board_state:
+from typing import List
 
-    {
-        "board": {
-            "height",
-            "width",
-            "food": [
-                {"x": int, "y": int}
-            ],
-            "snakes": [
-                {"id",
-                 "name",
-                 "health",
-                 body: [
-                   {"x": int, "y": int},
-                   ...
-                 ]
-                },
-            ],
-            "you": {
-                {
-                    "id",
-                    "name",
-                    "health",
-                    "body": [
-                        {"x": int, "y": int},
-                        ...
-                    ]
-                }
-            }
-        }
-    }
-
-"""
-
-from data import BoardState
-
-def move(pos, d):
-    x, y = pos
-    if d == "u":
-        return (x, y - 1)
-    elif d == "r":
-        return (x + 1, y)
-    elif d == "d":
-        return (x, y + 1)
-    elif d == "l":
-        return (x - 1, y)
-    else:
-        return pos
-
-def surroundings(pos):
-    return [
-        move(pos, "u"),
-        move(pos, "r"),
-        move(pos, "d"),
-        move(pos, "l"),
-    ]
+from libsnek.movement import is_safe, surroundings
 
 
-def is_safe(board_state: BoardState, pos, depth=0):
-    x, y = pos
-
-    print("safe?", pos)
-    if x < 0:
-        return False
-    elif x >= board_state.width:
-        return False
-    elif y < 0:
-        print("Unsafe")
-        return False
-    elif y >= board_state.height:
-        return False
-
-    for snake in board_state.snakes:
-        if pos in snake.body[:-1]:
-            return False
-
-    if depth >= 1:
-        print("Ye")
-        return True
-
-    else:
-        return any(is_safe(board_state, pos, 1) for pos in surroundings(pos))
-
-
-def apply(board_state):
+def apply(board_state) -> List[float]:
     my_pos = board_state.you.body[0]
 
     return [
-        1 if is_safe(board_state, pos) else 0
+        1.0 if is_safe(board_state, pos) else 0
         for pos in surroundings(my_pos)
     ]

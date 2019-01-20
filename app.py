@@ -1,13 +1,14 @@
+import time
+import logging
+
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 import uvicorn
 
-import logging
+from libsnek.data import BoardState
+from libsnek.util import timeit
 
-from pprint import pprint
-
-from data import BoardState
-from heuristics import nokillsnek
+from heuristics import genetic
 
 
 logger = logging.getLogger(__name__)
@@ -16,11 +17,6 @@ logger.setLevel(logging.DEBUG)
 
 
 app = Starlette()
-
-
-def get_weights(board_state):
-    # TODO more smartness
-    return nokillsnek.apply(board_state)
 
 
 def get_move(weights):
@@ -43,11 +39,11 @@ async def start(request):
 
 @app.route('/move', methods=['POST'])
 async def move(request):
+    start = time.time()
     board_state_raw = await request.json()
-    pprint(board_state_raw)
 
     board_state = BoardState(board_state_raw)
-    weights = get_weights(board_state)
+    weights = timeit(lambda: genetic.apply(board_state))
 
     logger.debug(weights)
 

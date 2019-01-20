@@ -22,6 +22,9 @@ class Snake(object):
     def body(self):
         return [point_to_tuple(p) for p in self.raw["body"]]
 
+    def __len__(self):
+        return len(self.body)
+
 
 class BoardState(object):
 
@@ -42,7 +45,7 @@ class BoardState(object):
 
     @property
     def food(self):
-        return [point_to_tuple(p) for p in self.raw["board"]["food"]]
+        return {point_to_tuple(p) for p in self.raw["board"]["food"]}
 
     @property
     def snakes(self):
