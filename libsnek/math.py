@@ -7,6 +7,8 @@ def normalize_max(nums: List) -> List[float]:
     1 is the maximum value
     """
     maxval = max(nums)
+    if maxval == 0:
+        return [0. for _ in nums]
     return [float(n) / maxval for n in nums]
 
 

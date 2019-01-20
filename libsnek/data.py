@@ -31,6 +31,20 @@ class BoardState(object):
     def __init__(self, raw_board_state):
         self.raw = raw_board_state
 
+    def __eq__(self, other):
+        return other.id == self.id and other.turn == self.turn and other.you.id == self.you.id
+
+    def __hash__(self):
+        return hash((self.id, self.turn, self.you.id))
+
+    @property
+    def id(self):
+        return self.raw["game"]["id"]
+
+    @property
+    def turn(self):
+        return self.raw["turn"]
+
     @property
     def you(self):
         return Snake(self.raw["you"])

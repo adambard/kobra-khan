@@ -1,7 +1,9 @@
 import numpy as np
 
 from libsnek.math import rms
+from libsnek.util import timeit
 from . import nokillsnek, hungry, claustrophobic
+import pprint
 
 
 HEURISTICS = (
@@ -14,11 +16,11 @@ HEURISTICS = (
 
 def apply(board_state):
     weight_array = [
-        weight * np.array(heuristic.apply(board_state))
+        weight * timeit(lambda: np.array(heuristic.apply(board_state)), name)
         for name, heuristic, weight in HEURISTICS
     ]
-
-    print(weight_array)
+    print("==== TURN", board_state.turn, "====")
+    pprint.pprint(weight_array)
 
     return [
         rms(weights)

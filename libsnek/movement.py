@@ -1,3 +1,4 @@
+import functools
 import queue
 from typing import Tuple
 from math import sqrt
@@ -56,7 +57,9 @@ def distance(pos1, pos2):
     return abs(x1 - x2) + abs(y1 - y2)
 
 
-def is_safe(board_state: BoardState, pos, depth=0):
+@functools.lru_cache(maxsize=128, typed=False)
+def is_safe(board_state: BoardState, pos, depth=1, max_depth=2,
+            check_edibility=True):
     x, y = pos
 
     if x < 0:
@@ -69,6 +72,7 @@ def is_safe(board_state: BoardState, pos, depth=0):
         return False
 
     for snake in board_state.snakes:
+        # Heads and tails are handled specially later
         if pos in snake.body[:-1]:
             return False
 
@@ -78,21 +82,52 @@ def is_safe(board_state: BoardState, pos, depth=0):
             head = snake.body[0]
             for p in surroundings(head):
                 if p in  board_state.food:
-                    print("UNSAFE - head is near food")
                     return False
 
-        # The area around another snake's head is safe, if
-        # that snake is shorter than us (and is not us)
-        if snake.id != board_state.you.id and len(snake) >= len(board_state.you):
-            if pos in surroundings(snake.body[0]):
-                return False
+        if check_edibility and snake.id != board_state.you.id:
+            # The area around another snake's head is safe, if
+            # that snake is shorter than us (and is not us)
+            if len(snake) >= len(board_state.you):
+                if pos in surroundings(snake.body[0]):
+                    return False
 
 
-    if depth >= 1:
+    if depth >= max_depth:
         return True
 
     else:
-        return any(is_safe(board_state, pos, 1) for pos in surroundings(pos))
+        return any(
+            is_safe(
+                board_state,
+                p,
+                depth=depth + 1,
+                max_depth=max_depth,
+                check_edibility=check_edibility
+            ) for p in surroundings(pos)
+        )
+
+
+@functools.lru_cache(maxsize=128, typed=False)
+def flood_fill(board_state, start_pos):
+    """
+    Returns a set of points constituting a flood fill from (start_pos)
+    """
+    if not is_safe(board_state, start_pos, max_depth=1):
+        return set()
+
+    visited = {start_pos}
+    frontier = queue.Queue()
+    frontier.put(start_pos)
+
+    while not frontier.empty():
+        node = frontier.get()
+        visited.add(node)
+        for p in surroundings(node):
+            if p not in visited and is_safe(board_state, p):
+                frontier.put(p)
+
+    return visited
+
 
 
 def find_path_pred(board_state, start_pos, end_pred):
@@ -122,7 +157,7 @@ def find_path_pred(board_state, start_pos, end_pred):
             return list(reversed(output))
 
         for next_pos in surroundings(pos):
-            if next_pos not in path:
+            if next_pos not in path and is_safe(board_state, next_pos, max_depth=1):
                 frontier.put(next_pos)
                 path[next_pos] = pos
 

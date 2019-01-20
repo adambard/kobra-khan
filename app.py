@@ -39,7 +39,6 @@ async def start(request):
 
 @app.route('/move', methods=['POST'])
 async def move(request):
-    start = time.time()
     board_state_raw = await request.json()
 
     board_state = BoardState(board_state_raw)
