@@ -64,6 +64,14 @@ async def ping(request):
     return JSONResponse({})
 
 
+@app.route('/set_weights', methods=['POST'])
+async def set_weights(request):
+    body = await request.json()
+    if "weights" in body:
+        genetic.set_weights(body['weights'])
+
+    return JSONResponse({})
+
 
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)

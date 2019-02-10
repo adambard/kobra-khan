@@ -10,8 +10,8 @@ def fill_size(board_state, start_pos):
     if not is_safe(board_state, start_pos, max_depth=1):
         return 0
 
-    # 10% of the board area is plenty
-    threshold = board_state.width * board_state.height / 10
+    # 25% of the board area is plenty
+    threshold = board_state.width * board_state.height / 4
 
     return len(flood_fill(board_state, start_pos, threshold=threshold))
 
