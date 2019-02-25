@@ -7,7 +7,7 @@ snake
 from typing import List
 
 
-from libsnek.movement import surroundings, find_path
+from libsnek.movement import surroundings, find_path, is_safe
 
 
 def is_my_food(board_state, my_pos, food):
@@ -31,6 +31,9 @@ def is_my_food(board_state, my_pos, food):
 
 def food_count(board_state, pos):
     controlled_by_me = 0
+
+    if not is_safe(board_state, pos):
+        return 0
 
     for food in board_state.food:
         if is_my_food(board_state, pos, food):

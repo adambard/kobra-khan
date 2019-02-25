@@ -7,7 +7,7 @@ async def apply(board_state):
     reference_distance = float(distance((0, 0), center_point))
 
     return [
-        distance(pos, center_point) / reference_distance
+        max(0., (reference_distance - distance(pos, center_point)) / reference_distance)
         for pos in surroundings(my_pos)
     ]
 

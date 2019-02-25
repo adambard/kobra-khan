@@ -1,13 +1,19 @@
 import time
 import logging
+import numpy as np
 
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse
 import uvicorn
 
 from libsnek.data import BoardState
+from libsnek import minimax
 
-from heuristics import genetic
+from kobrakhan import snake
+
+COLOR = "#4e10d3"
+HEAD_TYPE = "tongue"
+TAIL_TYPE = "round-bum"
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +39,11 @@ def get_move(weights):
 
 @app.route('/start', methods=['POST'])
 async def start(request):
-    return JSONResponse({'color': 'purple'})
+    return JSONResponse({
+        'color': COLOR,
+        'headType': HEAD_TYPE,
+        'tailType': TAIL_TYPE,
+    })
 
 
 @app.route('/move', methods=['POST'])
@@ -46,12 +56,28 @@ async def move(request):
 
     logger.info("=== Game: %s, Turn: %d, Snake: %s ===", board_state.id, board_state.turn, board_state.you.id)
 
-    end = time.time()
-    weights = await genetic.apply(board_state)
-    logger.info("Elapsed time: %0.2fs", end - start)
-    logger.debug(weights)
+    #minimax_scores = minimax.apply(board_state)
+    minimax_scores = np.array([1., 1., 1., 1.])
+    logger.info("MINIMAX SCORES: %r", minimax_scores)
 
-    return JSONResponse({'move': get_move(weights)})
+    minimax_done = time.time()
+
+    heuristic_weights = await snake.apply(board_state)
+
+    heuristics_done = time.time()
+
+    combined_weights = minimax_scores * heuristic_weights
+    logger.info("COMBINED WEIGHTS: %r", combined_weights)
+
+    move = get_move(combined_weights)
+
+    end = time.time()
+
+    logger.info("Elapsed time: %0.2fs", end - start)
+    logger.info("Minimax: %0.2fs", minimax_done - start)
+    logger.info("Heuristics: %0.2fs", heuristics_done - minimax_done)
+
+    return JSONResponse({'move': move})
 
 
 @app.route('/end', methods=['POST'])
@@ -68,7 +94,7 @@ async def ping(request):
 async def set_weights(request):
     body = await request.json()
     if "weights" in body:
-        genetic.set_weights(body['weights'])
+        snake.set_weights(body['weights'])
 
     return JSONResponse({})
 
