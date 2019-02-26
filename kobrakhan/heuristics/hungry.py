@@ -14,8 +14,6 @@ async def apply(board_state) -> List[float]:
 
     health_factor = (1.0 - (board_state.you.health / 100.0)) ** 4
 
-    print("HEALTH FACTOR", health_factor)
-
     distances = [
         health_factor * distance_to_nearest_food(board_state, p)
         for p in surroundings(my_pos)

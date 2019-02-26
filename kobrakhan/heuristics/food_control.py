@@ -47,11 +47,8 @@ async def apply(board_state) -> List[float]:
     if num_food < 1:
         return [0., 0., 0., 0.]
 
-
-
     ret = [
         food_count(board_state, p) / float(len(board_state.food))
         for p in surroundings(board_state.you.head)
     ]
-    print("FOOD_COUNT", ret)
     return ret
