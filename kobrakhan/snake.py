@@ -1,4 +1,5 @@
 import time
+import logging
 import numpy as np
 
 from libsnek.math import rms
@@ -15,7 +16,10 @@ from .heuristics import (
     voronoi,
     anorexic,
 )
-import pprint
+
+
+logger = logging.getLogger(__name__)
+
 
 
 # Feb. 7
@@ -90,14 +94,14 @@ HEURISTICS = (
 
 
 
-def print_weights():
-    print("---- Running with weights ----")
+def log_weights():
+    logger.debug("---- Running with weights ----")
     for (name, _, weights) in HEURISTICS:
-        print(f"{name:20s}: {weights}")
-    print("------------------------------")
+        logger.debug(f"{name:20s}: {weights}")
+    logger.debug("------------------------------")
 
 
-print_weights()
+log_weights()
 
 
 def set_weights(new_weights):
@@ -109,7 +113,7 @@ def set_weights(new_weights):
         (name, impl, new_weights.get(name, weight))
         for name, impl, weight in HEURISTICS
     ]
-    print_weights()
+    log_weights()
 
 
 def compute_weight(board_state, coefficients):
@@ -117,21 +121,11 @@ def compute_weight(board_state, coefficients):
     return np.sum(dimensions * coefficients)
 
 
-def timed(heuristic):
-    async def inner(board_state):
-        start = time.time()
-        result = await heuristic.apply(board_state)
-        duration = time.time() - start
-        print("%r: %f" % (heuristic, duration))
-        return result
-    return inner
-
-
 async def apply(board_state):
     global HEURISTICS
 
     future_weights = [
-        (compute_weight(board_state, coefficients), timed(heuristic)(board_state))
+        (compute_weight(board_state, coefficients), await heuristic.apply(board_state))
         for _name, heuristic, coefficients in HEURISTICS
     ]
 
@@ -139,9 +133,6 @@ async def apply(board_state):
         weight * np.array(await future)
         for weight, future in future_weights
     ]
-
-    pprint.pprint(weight_array)
-    pprint.pprint(np.array(board_state.board_array))
 
     return [
         rms(weights)

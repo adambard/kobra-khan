@@ -65,6 +65,7 @@ async def move(request):
     minimax_done = time.time()
 
     heuristic_weights = await heuristics
+    logger.info("HEURISTIC WEIGHTS: %r", heuristic_weights)
 
     heuristics_done = time.time()
 
