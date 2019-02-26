@@ -125,7 +125,7 @@ async def apply(board_state):
     global HEURISTICS
 
     future_weights = [
-        (compute_weight(board_state, coefficients), await heuristic.apply(board_state))
+        (compute_weight(board_state, coefficients), heuristic.apply(board_state))
         for _name, heuristic, coefficients in HEURISTICS
     ]
 
