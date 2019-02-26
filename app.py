@@ -56,13 +56,15 @@ async def move(request):
 
     logger.info("=== Game: %s, Turn: %d, Snake: %s ===", board_state.id, board_state.turn, board_state.you.id)
 
-    #minimax_scores = minimax.apply(board_state)
-    minimax_scores = np.array([1., 1., 1., 1.])
+    # Kick off heuristic calc
+    heuristics = snake.apply(board_state)
+
+    minimax_scores = minimax.apply(board_state, depth=3)
     logger.info("MINIMAX SCORES: %r", minimax_scores)
 
     minimax_done = time.time()
 
-    heuristic_weights = await snake.apply(board_state)
+    heuristic_weights = await heuristics
 
     heuristics_done = time.time()
 
@@ -73,9 +75,9 @@ async def move(request):
 
     end = time.time()
 
-    logger.info("Elapsed time: %0.2fs", end - start)
     logger.info("Minimax: %0.2fs", minimax_done - start)
     logger.info("Heuristics: %0.2fs", heuristics_done - minimax_done)
+    logger.info("Elapsed time: %0.2fs", end - start)
 
     return JSONResponse({'move': move})
 
