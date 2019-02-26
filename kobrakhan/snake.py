@@ -94,7 +94,7 @@ _HEURISTICS = (
 # Feb 25 most refined
 HEURISTICS = (
     ('hungry', hungry, [0.30812111, 0.68373428, 0.44728139,]),
-    ('greedy', greedy, [0.11229443, 0.62941391, 0.82036349,]),
+    ('greedy', greedy, [0.11229443, 0.02941391, 1.42036349,]),
     ('claustrophobic', claustrophobic, [3.34177219, 0.57054492, 3.15855432,]),
     ('chase_tail', chase_tail, [0.03420051, 0.32551665, 0.89777061,]),
     ('food_control', food_control, [2.1978414,  0.59805776, 2.1631654,]),
@@ -102,7 +102,7 @@ HEURISTICS = (
     ('prefer_center', prefer_center, [0.47036855, 0.73791454, 0.21458924,]),
     ('trap', trap, [4.65002321, 3.10868752, 4.10371105,]),
     ('voronoi', voronoi, [2.92269436, 2.94117605, 0.91644012,]),
-    ('anorexic', anorexic, [0.22840833, 0.08375437, 0.08830125,]),
+    ('anorexic', anorexic, [0.0, 0.0, 0.0,]),
 )
 
 
