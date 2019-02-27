@@ -1,6 +1,5 @@
 import time
 import logging
-import numpy as np
 
 from starlette.applications import Starlette
 from starlette.responses import JSONResponse
@@ -37,20 +36,8 @@ def get_move(weights):
         return "left"
 
 
-@app.route('/start', methods=['POST'])
-async def start(request):
-    return JSONResponse({
-        'color': COLOR,
-        'headType': HEAD_TYPE,
-        'tailType': TAIL_TYPE,
-    })
-
-
-@app.route('/move', methods=['POST'])
-async def move(request):
-
+async def calculate_move(board_state_raw):
     start = time.time()
-    board_state_raw = await request.json()
 
     board_state = BoardState(board_state_raw)
 
@@ -59,7 +46,7 @@ async def move(request):
     # Kick off heuristic calc
     heuristics = snake.apply(board_state)
 
-    minimax_scores = minimax.apply(board_state, depth=3)
+    minimax_scores = minimax.apply(board_state, depth=2)
     logger.info("MINIMAX SCORES: %r", minimax_scores)
 
     minimax_done = time.time()
@@ -79,6 +66,24 @@ async def move(request):
     logger.info("Minimax: %0.2fs", minimax_done - start)
     logger.info("Heuristics: %0.2fs", heuristics_done - minimax_done)
     logger.info("Elapsed time: %0.2fs", end - start)
+
+    return move
+
+
+@app.route('/start', methods=['POST'])
+async def start(request):
+    return JSONResponse({
+        'color': COLOR,
+        'headType': HEAD_TYPE,
+        'tailType': TAIL_TYPE,
+    })
+
+
+@app.route('/move', methods=['POST'])
+async def move(request):
+
+    board_state_raw = await request.json()
+    move = await calculate_move(board_state_raw)
 
     return JSONResponse({'move': move})
 
