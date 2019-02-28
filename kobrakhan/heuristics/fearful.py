@@ -17,7 +17,6 @@ def distance_to_snake(board_state, pos, snake):
     return len(path)
 
 
-
 def snake_distance_rms(board_state, pos):
     d = np.array([
         float(distance_to_snake(board_state, pos, s))

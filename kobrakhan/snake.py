@@ -1,3 +1,4 @@
+import asyncio
 import time
 import logging
 import numpy as np
@@ -15,6 +16,7 @@ from .heuristics import (
     trap,
     voronoi,
     anorexic,
+    freedom,
 )
 
 
@@ -103,6 +105,7 @@ HEURISTICS = (
     ('trap', trap, [4.65002321, 3.10868752, 4.10371105,]),
     ('voronoi', voronoi, [2.92269436, 2.94117605, 0.91644012,]),
     ('anorexic', anorexic, [0.0, 0.0, 0.0,]),
+    ('freedom', freedom, [1.0, 1.0, 1.0,]),
 )
 
 
@@ -134,18 +137,26 @@ def compute_weight(board_state, coefficients):
     return np.sum(dimensions * coefficients)
 
 
+def logged(name, heuristic, coefficients):
+    async def _inner(board_state):
+        start = time.time()
+        result = np.array(await heuristic.apply(board_state))
+        weight = compute_weight(board_state, coefficients)
+
+        result = result * weight
+        logger.info("%15s (%.2f): %r", name, time.time() - start, result)
+
+        return result
+    return _inner
+
+
 async def apply(board_state):
     global HEURISTICS
 
-    future_weights = [
-        (compute_weight(board_state, coefficients), heuristic.apply(board_state))
-        for _name, heuristic, coefficients in HEURISTICS
-    ]
-
-    weight_array = [
-        weight * np.array(await future)
-        for weight, future in future_weights
-    ]
+    weight_array = await asyncio.gather(*[
+        logged(name, heuristic, coefficients)(board_state)
+        for name, heuristic, coefficients in HEURISTICS
+    ])
 
     return [
         rms(weights)

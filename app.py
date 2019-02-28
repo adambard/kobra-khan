@@ -46,7 +46,7 @@ async def calculate_move(board_state_raw):
     # Kick off heuristic calc
     heuristics = snake.apply(board_state)
 
-    minimax_scores = minimax.apply(board_state, depth=2)
+    minimax_scores = minimax.apply(board_state, depth=3)
     logger.info("MINIMAX SCORES: %r", minimax_scores)
 
     minimax_done = time.time()

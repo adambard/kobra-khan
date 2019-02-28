@@ -42,10 +42,12 @@ def control_zone_size(board_state, pos):
         return 0
 
     board_size = board_state.width * board_state.height
-    if board_size < 100:
+    if board_size < 122:
+        denominator = float(board_size)
         my_points = movement.flood_fill(board_state, pos, pred=lambda bs, p: controlled_by_us(bs, pos, p))
     elif board_size < 200:
         # Subsample the board by 2
+        denominator = float(board_size) / 4.0
         my_points = [
             (ii * 2, jj * 2)
             for ii in range(board_state.width // 2)
@@ -53,6 +55,7 @@ def control_zone_size(board_state, pos):
             if controlled_by_us(board_state, pos, (ii * 2, jj * 2))
         ]
     else:
+        denominator = float(board_size) / 9.0
         # Subsample the board by 3 to improve performance
         my_points = [
             (ii * 3, jj * 3)
@@ -60,7 +63,7 @@ def control_zone_size(board_state, pos):
             for jj in range(board_state.height // 3)
             if controlled_by_us(board_state, pos, (ii * 3, jj * 3))
         ]
-    return len(my_points)
+    return len(my_points) / denominator
 
 
 
