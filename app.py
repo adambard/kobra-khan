@@ -46,7 +46,12 @@ async def calculate_move(board_state_raw):
     # Kick off heuristic calc
     heuristics = snake.apply(board_state)
 
-    minimax_scores = minimax.apply(board_state, depth=3)
+    if len(board_state.snakes) > 6:
+        minimax_scores = minimax.apply(board_state, depth=1)
+    elif len(board_state.snakes) > 3:
+        minimax_scores = minimax.apply(board_state, depth=3)
+    else:
+        minimax_scores = minimax.apply(board_state, depth=5)
     logger.info("MINIMAX SCORES: %r", minimax_scores)
 
     minimax_done = time.time()
