@@ -68,9 +68,17 @@ async def calculate_move(board_state_raw):
 
     end = time.time()
 
+    duration = end - start
+
     logger.info("Minimax: %0.2fs", minimax_done - start)
     logger.info("Heuristics: %0.2fs", heuristics_done - minimax_done)
-    logger.info("Elapsed time: %0.2fs", end - start)
+    logger.info("Elapsed time: %0.2fs", duration)
+
+    if duration > 0.20:
+        logger.error("=== SLOW TURN === Game: %s, Turn: %d, Snake: %s ===", board_state.id, board_state.turn, board_state.you.id)
+        logger.error("Minimax: %0.2fs", minimax_done - start)
+        logger.error("Heuristics: %0.2fs", heuristics_done - minimax_done)
+        logger.error("Elapsed time: %0.2fs", duration)
 
     return move
 
