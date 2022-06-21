@@ -1,5 +1,5 @@
 starlette==0.9.9
 uvicorn==0.3.24
-numpy==1.16.0
+numpy==1.22.0
 requests==2.21.0
 git+https://github.com/adambard/libsnek.git@master#egg=libsnek
